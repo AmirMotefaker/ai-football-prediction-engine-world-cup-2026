@@ -52,3 +52,7 @@ It is designed for simulation and analytical purposes only.
 📜 License
 
 MIT License
+
+## 🔎 Keywords
+
+football prediction AI, World Cup 2026, sports analytics, probabilistic model, Poisson distribution, Monte Carlo simulation, xG model, tactical football analysis, machine learning sports, prompt engineering AI
