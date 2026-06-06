@@ -1,3 +1,10 @@
+![GitHub repo size](https://img.shields.io/github/repo-size/YOUR_USERNAME/football-prediction-system-prompt)
+![GitHub stars](https://img.shields.io/github/stars/YOUR_USERNAME/football-prediction-system-prompt?style=social)
+![License](https://img.shields.io/github/license/YOUR_USERNAME/football-prediction-system-prompt)
+![Python](https://img.shields.io/badge/Python-Compatible-blue)
+![AI](https://img.shields.io/badge/AI-Powered-green)
+![Status](https://img.shields.io/badge/Status-Active-brightgreen)
+
 🧠 Football Prediction AI System Prompt (Opta-style Engine) - WorldCup 2026
 
 This repository contains a professional-grade system prompt designed for AI models to simulate and predict football matches using:
