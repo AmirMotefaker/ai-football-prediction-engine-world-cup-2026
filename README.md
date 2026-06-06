@@ -5,6 +5,8 @@
 ![AI](https://img.shields.io/badge/AI-Powered-green)
 ![Status](https://img.shields.io/badge/Status-Active-brightgreen)
 
+A production-grade AI system prompt for probabilistic football match prediction using statistical modeling and tactical simulation.
+
 🧠 Football Prediction AI System Prompt (Opta-style Engine) - WorldCup 2026
 
 This repository contains a professional-grade system prompt designed for AI models to simulate and predict football matches using:
