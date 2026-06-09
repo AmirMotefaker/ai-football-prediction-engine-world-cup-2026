@@ -56,3 +56,12 @@ MIT License
 ## 🔎 Keywords
 
 football prediction AI, World Cup 2026, sports analytics, probabilistic model, Poisson distribution, Monte Carlo simulation, xG model, tactical football analysis, machine learning sports, prompt engineering AI
+
+
+## 🚀 Quick Start
+
+### Use the System Prompt directly (No code needed)
+1. Open [system-prompt/system_prompt_v2.md](./system-prompt/system_prompt_v2.md)
+2. Copy the full prompt
+3. Paste as the **System** message in ChatGPT (GPT-4o recommended)
+4. Send your match request:
