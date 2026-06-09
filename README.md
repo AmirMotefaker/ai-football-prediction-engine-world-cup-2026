@@ -1,6 +1,6 @@
-[![GitHub repo size](https://img.shields.io/github/repo-size/amirmotefaker/ai-football-prediction-engine-world-cup-2026)](https://github.com/amirmotefaker/ai-football-prediction-engine-world-cup-2026)
+[![GitHub repo size](https://img.shields.io/github/repo-size/amirmotefaker/ai-football-prediction-engine-world-cup-2026?style=flat-square&color=blue)](https://github.com/amirmotefaker/ai-football-prediction-engine-world-cup-2026)
 [![GitHub stars](https://img.shields.io/github/stars/amirmotefaker/ai-football-prediction-engine-world-cup-2026?style=social)](https://github.com/amirmotefaker/ai-football-prediction-engine-world-cup-2026)
-[![License](https://img.shields.io/github/license/amirmotefaker/ai-football-prediction-engine-world-cup-2026)](https://github.com/amirmotefaker/ai-football-prediction-engine-world-cup-2026)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
 [![Python](https://img.shields.io/badge/Python-Compatible-blue)](https://github.com/amirmottefaker/ai-football-prediction-engine-world-cup-2026)
 [![AI](https://img.shields.io/badge/AI-Powered-green)](https://github.com/amirmottefaker/ai-football-prediction-engine-world-cup-2026)
 [![Status](https://img.shields.io/badge/Status-Active-brightgreen)](https://github.com/amirmottefaker/ai-football-prediction-engine-world-cup-2026)
