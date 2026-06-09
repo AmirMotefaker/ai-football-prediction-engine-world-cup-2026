@@ -1,9 +1,9 @@
-[![GitHub repo size](https://img.shields.io/github/repo-size/amirmottefaker/ai-football-prediction-engine-world-cup-2026)](https://github.com/AmirMotefaker/ai-football-prediction-engine-world-cup-2026)
-[![GitHub stars](https://img.shields.io/github/stars/amirmottefaker/ai-football-prediction-engine-world-cup-2026?style=social)](https://github.com/AmirMotefaker/ai-football-prediction-engine-world-cup-2026)
-[![License](https://img.shields.io/github/license/amirmotrefaker/ai-football-prediction-engine-world-cup-2026)](https://github.com/AmirMotefaker/ai-football-prediction-engine-world-cup-2026)
-[![Python](https://img.shields.io/badge/Python-Compatible-blue)](https://github.com/AmirMotefaker/ai-football-prediction-engine-world-cup-2026)
-[![AI](https://img.shields.io/badge/AI-Powered-green)](https://github.com/AmirMotefaker/ai-football-prediction-engine-world-cup-2026)
-[![Status](https://img.shields.io/badge/Status-Active-brightgreen)](https://github.com/AmirMotefaker/ai-football-prediction-engine-world-cup-2026)
+[![GitHub repo size](https://img.shields.io/github/repo-size/amirmottefaker/ai-football-prediction-engine-world-cup-2026)](https://github.com/amirmottefaker/ai-football-prediction-engine-world-cup-2026)
+[![GitHub stars](https://img.shields.io/github/stars/amirmottefaker/ai-football-prediction-engine-world-cup-2026?style=social)](https://github.com/amirmottefaker/ai-football-prediction-engine-world-cup-2026)
+[![License](https://img.shields.io/github/license/amirmottefaker/ai-football-prediction-engine-world-cup-2026)](https://github.com/amirmottefaker/ai-football-prediction-engine-world-cup-2026)
+[![Python](https://img.shields.io/badge/Python-Compatible-blue)](https://github.com/amirmottefaker/ai-football-prediction-engine-world-cup-2026)
+[![AI](https://img.shields.io/badge/AI-Powered-green)](https://github.com/amirmottefaker/ai-football-prediction-engine-world-cup-2026)
+[![Status](https://img.shields.io/badge/Status-Active-brightgreen)](https://github.com/amirmottefaker/ai-football-prediction-engine-world-cup-2026)
 
 # ⚽ AI Football Prediction Engine — World Cup 2026
 
