@@ -1,182 +1,194 @@
-📘 Methodology — Football Prediction System (v2.0)
-🧠 Overview
+# Methodology — WC2026 AI Prediction Engine
 
-This document explains the scientific and statistical foundations behind the Football Match Prediction System Prompt.
+This document explains the statistical and tactical methodology behind the prediction engine in technical detail.
 
-The model is designed to simulate football matches using a combination of:
+---
 
-Probabilistic modeling
-Tactical evaluation
-Context-aware adjustments
-Statistical scoring distributions
+## 1. Overview — The 6-Step Pipeline
 
-Its goal is not deterministic prediction, but realistic probability-based simulation.
+```
+┌─────────────────┐   ┌──────────────────┐   ┌──────────────────┐
+│ 1. TSI          │ → │ 2. Poisson xG     │ → │ 3. Monte Carlo   │
+│ Team Strength   │   │ Model (λ_A, λ_B)  │   │ Simulation       │
+└─────────────────┘   └──────────────────┘   └──────────────────┘
+                                                        ↓
+┌─────────────────┐   ┌──────────────────┐   ┌──────────────────┐
+│ 6. Confidence   │ ← │ 5. Contextual     │ ← │ 4. Tactical      │
+│ Quantification  │   │ Modifiers         │   │ Overlay          │
+└─────────────────┘   └──────────────────┘   └──────────────────┘
+```
 
-⚽ 1. Why Poisson Model is Used
-📊 Core Idea
+---
 
-Football scoring is a low-frequency discrete event system, meaning:
+## 2. Team Strength Index (TSI)
 
-Goals are rare
-Events are independent (approximately)
-Score distribution is asymmetric
+**File:** `engine/tsi_calculator.py`
 
-This makes the Poisson distribution highly suitable for modeling goals.
+A composite 0–100 score combining six weighted, normalized components:
 
-📐 Why Poisson works well in football:
-It models the probability of a number of events occurring in a fixed interval
-It assumes independent goal-scoring events
-It matches real-world football score distributions (0–0, 1–0, 2–1, etc.)
-🧮 In this system:
+| Component | Weight | Source Field | Normalization |
+|-----------|--------|--------------|----------------|
+| FIFA Ranking | 20% | `fifa_rank` | Inverted min-max (1–90 range) |
+| ELO Rating | 25% | `elo_rating` | Min-max (1650–2100 range) |
+| xG For (avg) | 15% | `xg_for_avg` | Min-max (0.80–2.50 range) |
+| xG Against (avg) | 15% | `xg_against_avg` | Inverted min-max (0.70–1.70 range) |
+| Form Score | 15% | `form_score` | Min-max (0–15 range, W=3/D=1/L=0 × 5 games) |
+| Squad Depth | 10% | `squad_depth_score` | Min-max (4.0–10.0 range) |
 
-We approximate:
+### Formula
 
-Expected Goals (xG) for each team
-Convert xG → probability distribution of scores
+```
+TSI = 100 × Σ(weight_i × normalized_value_i)
+```
 
-Example:
+### Why these bounds?
+The min-max ranges are calibrated to the actual WC2026 field — e.g., FIFA ranks span from #1 (France) to ~#90 (lowest qualified team), and ELO ratings span ~1650–2100 across all 48 qualified nations. This ensures the TSI distribution uses the full 0–100 range meaningfully.
 
-Mexico xG = 1.8
-South Africa xG = 0.7
+---
 
-Then we compute probabilities for:
+## 3. Expected Goals Model (Bivariate Poisson)
 
-0–0
-1–0
-2–1
-3–1
-etc.
-🎯 Why not deterministic models?
+**File:** `engine/poisson_model.py`
 
-Because football has:
+### Base Lambda Calculation
 
-High variance
-Low scoring density
-Strong randomness (red cards, deflections, referee decisions)
-🌍 2. Why Altitude Matters (Mexico City Effect)
-📌 Physical Reason
+For Team A facing Team B:
 
-Mexico City is located at approximately:
+```
+base_λ_A = √(xG_for_A × xG_against_B)
+```
 
-2,200 meters above sea level
+This geometric mean approach (similar to Dixon-Coles models) balances a team's attacking output against the opponent's defensive solidity.
 
-At high altitude:
+### Modifiers Applied Multiplicatively
 
-Oxygen levels are lower
-Player endurance decreases faster
-Ball flight behaves differently
-Fatigue occurs earlier
-📊 Tactical impact:
-Home team advantage (Mexico):
-Better physiological adaptation
-Higher pressing intensity sustainability
-Stronger second-half performance
-Away team disadvantage (South Africa):
-Reduced stamina
-Slower recovery between sprints
-Higher late-game fatigue
-📈 Model implementation:
+```
+λ_A = base_λ_A × altitude_mod × rest_mod × weather_mod × stage_mod × host_mod
+```
 
-Altitude is applied as a context multiplier:
+| Modifier | Trigger | Effect |
+|----------|---------|--------|
+| **Altitude** | Venue ≥ 2200m (extreme) | ×1.12 |
+| | Venue 1500–2199m (high) | ×1.05 |
+| | Venue 500–1499m (medium) | ×1.02 |
+| | Venue < 500m (low) | ×1.00 |
+| **Acclimatization** | Team's home altitude within 200m of venue | Negates altitude effect |
+| | Team's home altitude within 800m of venue | Halves altitude effect |
+| **Rest** | < 3 days since last match | ×0.90 |
+| | 3–5 days | ×0.96 |
+| | 6+ days | ×1.00 |
+| **Weather** | Hot/humid venues (Miami, Houston, Monterrey) | ×0.94–0.96 |
+| | Mild venues (Seattle, Vancouver, Boston) | ×1.00 |
+| **Tournament Stage** | Group stage | ×1.00 |
+| | Knockout rounds | ×0.91–0.96 (increasingly conservative) |
+| **Host Nation** | USA / Canada / Mexico playing | ×1.08 |
 
-Mexico performance: +5% to +12%
-Opponent performance: -5% to -10%
-📉 3. Why Draw Bias is Important in World Cup Matches
-⚽ Structural reason:
+A floor of **0.20** is applied to prevent λ from reaching zero (which would make Poisson sampling degenerate).
 
-Group stage matches have a natural draw inflation tendency due to:
+---
 
-Risk-averse tactics
-Tournament point system
-Balanced team matchups
-High penalty for losing
-📊 Strategic behavior:
+## 4. Monte Carlo Simulation
 
-Teams often:
+**File:** `engine/monte_carlo.py`
 
-Avoid early risk
-Prioritize not losing over winning
-Play more conservatively after scoring
-🧠 Result:
+### Sampling Method
+Uses **Knuth's algorithm** for Poisson-distributed random sampling:
 
-Draw probability in World Cup matches is statistically higher than in league matches with similar team strength.
+```python
+def poisson_sample(lam):
+    L = exp(-lam)
+    k = 0
+    p = 1.0
+    while p > L:
+        k += 1
+        p *= random()
+    return k - 1
+```
 
-Typical baseline:
+### Default Configuration
+- **10,000 iterations** per match (configurable via `--sims`)
+- **Fixed seed (2026)** by default for reproducibility — set `seed=None` for true randomness
 
-Club football draw rate: ~25%
-World Cup group stage: ~28–32%
-📌 Model adjustment:
+### Outputs Derived
+1. **Win/Draw/Loss probabilities** — direct frequency counts from simulations
+2. **Top 10 scorelines** — most frequent (goals_a, goals_b) pairs
+3. **Expected goals** — average goals scored across all simulations
+4. **Market indicators** — computed *analytically* (not simulated) for precision:
+   - Over 2.5 / Over 1.5: `1 - P(total goals ≤ 2 or ≤ 1)` using combined λ
+   - BTTS: `(1 - P(0|λ_A)) × (1 - P(0|λ_B))`
+   - Clean sheets: `P(0 | opponent's λ)`
 
-The system increases draw probability when:
+### Draw Bonus Adjustment
+For knockout stages, a `draw_bonus` (e.g., +5% for semifinals/finals) is applied post-simulation:
+- Half the bonus is subtracted proportionally from each win probability
+- The full bonus is added to the draw probability
+- All three probabilities are renormalized to sum to 100%
 
-Teams are closely matched
-First half is 0–0
-Both teams need at least 1 point
-⚖️ 4. Why Weighted Scoring is Used
-🎯 Problem:
+This reflects the well-documented phenomenon of more cautious, risk-averse tactics in high-stakes knockout matches.
 
-Football performance is multi-dimensional:
+---
 
-Form alone is insufficient
-Squad quality alone is insufficient
-Tactical setup alone is insufficient
-🧩 Solution: Weighted Composite Model
+## 5. Tactical Overlay Analysis
 
-We define a Team Strength Index (0–100):
+This step is performed by the **GPT-4o layer** (via `system_prompt_v2.md`), not the Python engine, since it requires qualitative reasoning about:
 
-Final Score =
-30% Recent Form
-25% Squad Quality
-20% Tactical Strength
-15% Defensive Stability
-10% External Factors (travel, altitude, pressure)
-📊 Why weighting matters:
+- Formation matchups (e.g., 3-5-2 vs 4-3-3 wide overloads)
+- Pressing intensity vs. build-up speed
+- Set-piece threat assessment
+- Identification of the single most decisive individual duel
 
-Different factors have different predictive power:
+The Python engine provides the **quantitative grounding** (TSI, λ values, probabilities) which GPT-4o uses as "ground truth" to anchor its tactical narrative — preventing hallucinated statistics.
 
-Form = short-term signal (high volatility)
-Squad quality = structural baseline (stable)
-Tactics = matchup-dependent modifier
-External factors = situational bias
-🧠 Benefit:
+---
 
-Weighted scoring:
+## 6. Contextual & Psychological Modifiers
 
-Reduces noise
-Stabilizes predictions
-Improves generalization across tournaments
-Prevents overfitting to recent matches
-🔁 5. Model Philosophy
+Applied at the GPT-4o reasoning layer using rules defined in the system prompt:
 
-This system is based on:
+| Factor | Adjustment |
+|--------|-----------|
+| Knockout stage pressure | −8% goal expectancy, +5% draw probability (already baked into `STAGE_MODIFIERS`) |
+| TSI gap < 8 | Flagged as HIGH UPSET RISK |
+| H2H revenge factor | +3% win probability narrative emphasis |
+| Recent manager change | −5% tactical cohesion (qualitative flag) |
+| "Group of Death" fatigue | −7% xG narrative flag for tired teams |
+| Host nation crowd | +5% psychological edge (on top of the +8% λ modifier) |
 
-“Football is not deterministic — it is probabilistic with structure.”
+---
 
-We combine:
+## 7. Confidence & Uncertainty Quantification
 
-Statistical modeling (Poisson)
-Behavioral modeling (tactics & motivation)
-Environmental physics (altitude, travel)
-Tournament psychology (draw bias)
-📌 6. Limitations
+**Confidence Level** is determined by the maximum single-outcome probability:
 
-This model does NOT fully capture:
+| Max Outcome Probability | Confidence Level |
+|--------------------------|-------------------|
+| ≥ 55% | HIGH |
+| 40% – 54.9% | MEDIUM |
+| < 40% | LOW |
 
-Referee randomness
-Sudden injuries during match
-Psychological collapse under pressure
-Extreme tactical surprises
+**Model Variance**: Since goals follow a Poisson distribution, the standard deviation equals `√λ`. This is reported as `std_goals_a` / `std_goals_b` to communicate the inherent unpredictability even when λ is precisely known.
 
-Therefore:
+**Data Quality Score** (1–5 stars) reflects completeness of input data — full marks require: FIFA rank, ELO, xG for/against, form, squad depth, formation, key players, rest days, and venue conditions all present.
 
-👉 Outputs must always be interpreted as probabilities, not predictions.
+---
 
-🏁 Conclusion
+## 8. Known Limitations
 
-This methodology ensures the system is:
+1. **Static xG averages** — real teams' attacking/defensive output varies by opponent quality; this model uses season-wide averages
+2. **No live injury feed** — key absences must be manually provided via `--absence-a` / `--absence-b`
+3. **No head-to-head history** — the `[COMPARE]` mode in the system prompt relies on GPT-4o's training knowledge, not a structured database
+4. **Altitude acclimatization heuristic** — the 200m/800m thresholds are reasonable approximations, not derived from sports-science literature
+5. **Fixed random seed** — default seed=2026 means repeated runs with identical inputs produce identical outputs; set `seed=None` for variance across runs
 
-✔ Statistically grounded
-✔ Reproducible
-✔ Explainable
-✔ Suitable for AI simulation engines
-✔ Extendable for Monte Carlo systems
+---
+
+## 9. References & Inspiration
+
+- Dixon, M.J. & Coles, S.G. (1997). "Modelling Association Football Scores and Inefficiencies in the Football Betting Market"
+- FiveThirtyEight SPI (Soccer Power Index) methodology
+- Opta xG modeling principles
+- Knuth, D.E. "The Art of Computer Programming, Vol 2" — Poisson sampling algorithm
+
+---
+
+*For implementation details, see the source files in `engine/`. For the AI reasoning layer, see `system-prompt/system_prompt_v2.md`.*
