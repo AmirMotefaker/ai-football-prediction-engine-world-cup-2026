@@ -5,7 +5,7 @@
 [![AI](https://img.shields.io/badge/AI-Powered-green)](https://github.com/amirmottefaker/ai-football-prediction-engine-world-cup-2026)
 [![Status](https://img.shields.io/badge/Status-Active-brightgreen)](https://github.com/amirmottefaker/ai-football-prediction-engine-world-cup-2026)
 
-# ⚽ AI Football Predicton Engine — World Cup 2026
+# ⚽ AI Football Prediction Engine — World Cup 2026
 
 > A production-grade AI system for probabilistic football match prediction using statistical modeling, Poisson simulation, and tactical analysis — inspired by Opta & FiveThirtyEight. Built specifically for the **FIFA World Cup 2026**.
 
