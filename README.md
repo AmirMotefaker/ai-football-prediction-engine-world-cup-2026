@@ -7,7 +7,7 @@
 
 # ⚽ AI Football Prediction Engine - World Cup 2026
 
-> A production-grade AI sysem for probabilistic football match prediction using statistical modeling, Poisson simulation, and tactical analysis — inspired by Opta & FiveThirtyEight. Built specifically for the **FIFA World Cup 2026**.
+> A production-grade AI system for probabilistic football match prediction using statistical modeling, Poisson simulation, and tactical analysis — inspired by Opta & FiveThirtyEight. Built specifically for the **FIFA World Cup 2026**.
 
 ---
 
